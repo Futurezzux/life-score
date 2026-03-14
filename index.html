@@ -72,7 +72,6 @@
       background: linear-gradient(135deg,#667eea,#764ba2);
       color: #fff; border: none; padding: 12px 36px;
       border-radius: 30px; font-size: 1rem; cursor: pointer; font-weight: 600;
-      margin-top: 4px;
     }
     .restart-btn:hover { opacity: 0.88; }
   </style>
@@ -89,7 +88,6 @@
     <div class="options" id="opts-0"></div>
     <div class="nav-btns"><span></span><button class="btn btn-primary" onclick="nextStep()">下一步</button></div>
   </div>
-
   <div class="step" id="step-1"><div class="step-title" id="title-1"></div><div class="options" id="opts-1"></div><div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div></div>
   <div class="step" id="step-2"><div class="step-title" id="title-2"></div><div class="options" id="opts-2"></div><div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div></div>
   <div class="step" id="step-3"><div class="step-title" id="title-3"></div><div class="options" id="opts-3"></div><div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div></div>
@@ -119,66 +117,66 @@ let currentStep = 0;
 const flow = [
   { key:'sector', title:'你的工作性质是？', options:[
     { label:'🏛️ 体制内（公务员 / 事业单位 / 国企）', val:'public', score:1 },
-    { label:'🏢 体制外（私企 / 外企 / 自由职业）', val:'private', score:0.5 },
+    { label:'🏢 体制外（私企 / 外企 / 自由职业）', val:'private', score:0.5 }
   ]},
   { key:'city', title:'你目前工作的城市级别是？', options:[
     { label:'一线城市（北上广深）', val:'tier1', score:0.5 },
     { label:'新一线城市', val:'tier1_5', score:0.8 },
     { label:'二线城市', val:'tier2', score:1 },
     { label:'三线城市', val:'tier3', score:1 },
-    { label:'四五线城市', val:'tier4', score:0.8 },
+    { label:'四五线城市', val:'tier4', score:0.8 }
   ]},
   { key:'hometown', title:'工作城市离你家乡有多远？', options:[
     { label:'就在家附近，骑车能到', val:'near', score:2 },
-    { label:'同城市 / 同省，偶尔能回', val:'same_prov', score:1.5 },
+    { label:'同城市或同省，偶尔能回', val:'same_prov', score:1.5 },
     { label:'跨省，逢年过节才回', val:'far', score:0.5 },
-    { label:'很远，回一次要大半天', val:'very_far', score:0 },
+    { label:'很远，回一次要大半天', val:'very_far', score:0 }
   ]},
   { key:'commute', title:'你每天单程通勤时间大概多久？', options:[
     { label:'15分钟以内，幸福感拉满', val:'short', score:2 },
-    { label:'15 ~ 30分钟，还行', val:'mid', score:1.5 },
-    { label:'30 ~ 60分钟，有点累', val:'long', score:0.8 },
-    { label:'1小时以上，路上就废了', val:'very_long', score:0 },
+    { label:'15到30分钟，还行', val:'mid', score:1.5 },
+    { label:'30到60分钟，有点累', val:'long', score:0.8 },
+    { label:'1小时以上，路上就废了', val:'very_long', score:0 }
   ]},
   { key:'rest', title:'你的休息制度是？', options:[
     { label:'双休，雷打不动', val:'two_day', score:2 },
     { label:'大小周，凑合', val:'alt', score:1 },
     { label:'单休，就一天', val:'one_day', score:0.5 },
-    { label:'几乎没有固定休息', val:'none', score:0 },
+    { label:'几乎没有固定休息', val:'none', score:0 }
   ]},
   { key:'hours', title:'你平时几点上班、几点下班？', options:[
-    { label:'9点上 ~ 6点下，正常人时间', val:'normal', score:2 },
-    { label:'8点上 ~ 7点下，稍微长一点', val:'slightly_long', score:1.2 },
-    { label:'8点上 ~ 9点下，10小时+', val:'long', score:0.4 },
-    { label:'早八晚十以上，接近996', val:'extreme', score:0 },
+    { label:'9点上到6点下，正常人时间', val:'normal', score:2 },
+    { label:'8点上到7点下，稍微长一点', val:'slightly_long', score:1.2 },
+    { label:'8点上到9点下，10小时以上', val:'long', score:0.4 },
+    { label:'早八晚十以上，接近996', val:'extreme', score:0 }
   ]},
   { key:'overtime', title:'加班情况怎么样？', options:[
     { label:'基本不加班，到点走人', val:'no', score:2 },
     { label:'偶尔加班，有加班费', val:'sometimes_paid', score:1.5 },
     { label:'偶尔加班，没有加班费', val:'sometimes_free', score:0.8 },
     { label:'经常加班，身体有点吃不消', val:'often', score:0.2 },
-    { label:'天天加班，已经麻木了', val:'always', score:0 },
+    { label:'天天加班，已经麻木了', val:'always', score:0 }
   ]},
   { key:'salary', title:'你目前的税后月薪大概在哪个区间？', options:[
-    { label:'3000 元以下', val:'s1', score:0 },
-    { label:'3000 ~ 6000 元', val:'s2', score:0.5 },
-    { label:'6000 ~ 10000 元', val:'s3', score:1 },
-    { label:'10000 ~ 15000 元', val:'s4', score:1.5 },
-    { label:'15000 ~ 20000 元', val:'s5', score:1.8 },
-    { label:'20000 元以上', val:'s6', score:2 },
+    { label:'3000元以下', val:'s1', score:0 },
+    { label:'3000到6000元', val:'s2', score:0.5 },
+    { label:'6000到10000元', val:'s3', score:1 },
+    { label:'10000到15000元', val:'s4', score:1.5 },
+    { label:'15000到20000元', val:'s5', score:1.8 },
+    { label:'20000元以上', val:'s6', score:2 }
   ]},
   { key:'atmosphere', title:'工作氛围和人际关系怎么样？', options:[
     { label:'同事融洽，领导靠谱，上班不内耗', val:'good', score:2 },
     { label:'还行，没什么大矛盾', val:'ok', score:1.2 },
     { label:'一般，偶尔有点压抑', val:'mid', score:0.5 },
-    { label:'氛围差，领导难搞，内耗严重', val:'bad', score:0 },
+    { label:'氛围差，领导难搞，内耗严重', val:'bad', score:0 }
   ]},
   { key:'freetime', title:'下班后你有属于自己的时间吗？', options:[
     { label:'有，下班就是我的时间，爱干嘛干嘛', val:'yes', score:2 },
     { label:'有一点，但经常被消息打扰', val:'partial', score:1 },
     { label:'很少，下班了还要处理工作', val:'little', score:0.3 },
-    { label:'几乎没有，工作占满了生活', val:'no', score:0 },
-  ]},
+    { label:'几乎没有，工作占满了生活', val:'no', score:0 }
+  ]}
 ];
 
 function updateProgress() {
@@ -188,9 +186,9 @@ function updateProgress() {
 }
 
 function renderStep(idx) {
-  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.step').forEach(function(s) { s.classList.remove('active'); });
   document.getElementById('result').style.display = 'none';
-  const cfg = flow[idx];
+  var cfg = flow[idx];
   if (idx > 0) {
     document.getElementById('title-' + idx).textContent = cfg.title;
     renderOptions('opts-' + idx, cfg.options, cfg.key);
@@ -202,16 +200,16 @@ function renderStep(idx) {
 }
 
 function renderOptions(containerId, options, key) {
-  const container = document.getElementById(containerId);
+  var container = document.getElementById(containerId);
   container.innerHTML = '';
-  options.forEach(opt => {
-    const btn = document.createElement('div');
+  options.forEach(function(opt) {
+    var btn = document.createElement('div');
     btn.className = 'opt-btn';
     btn.textContent = opt.label;
     btn.dataset.val = opt.val;
-    if (answers[key] === opt.val) btn.classList.add('selected');
-    btn.addEventListener('click', () => {
-      container.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+    if (answers[key] === opt.val) { btn.classList.add('selected'); }
+    btn.addEventListener('click', function() {
+      container.querySelectorAll('.opt-btn').forEach(function(b) { b.classList.remove('selected'); });
       btn.classList.add('selected');
       answers[key] = opt.val;
     });
@@ -220,7 +218,7 @@ function renderOptions(containerId, options, key) {
 }
 
 function nextStep() {
-  const cfg = flow[currentStep];
+  var cfg = flow[currentStep];
   if (!answers[cfg.key]) { alert('请先选择一项'); return; }
   currentStep++;
   if (currentStep >= TOTAL_STEPS) { calcScore(); return; }
@@ -234,33 +232,33 @@ function prevStep() {
 }
 
 function calcScore() {
-  let total = 0, maxTotal = 0;
-  flow.forEach(cfg => {
-    const opt = cfg.options.find(o => o.val === answers[cfg.key]);
+  var total = 0, maxTotal = 0;
+  flow.forEach(function(cfg) {
+    var opt = cfg.options.find(function(o) { return o.val === answers[cfg.key]; });
     if (opt) total += opt.score;
-    maxTotal += Math.max(...cfg.options.map(o => o.score));
+    maxTotal += Math.max.apply(null, cfg.options.map(function(o) { return o.score; }));
   });
-  const ratio = total / maxTotal;
-  let score = Math.round(ratio * 11 - 1);
+  var ratio = total / maxTotal;
+  var score = Math.round(ratio * 11 - 1);
   score = Math.max(-1, Math.min(10, score));
   showResult(score);
 }
 
 function showResult(score) {
-  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.step').forEach(function(s) { s.classList.remove('active'); });
   document.getElementById('result').style.display = 'block';
   document.getElementById('progressFill').style.width = '100%';
   document.getElementById('stepCounter').textContent = '';
   document.getElementById('scoreNum').textContent = score;
 
-  const sector = answers['sector'];
-  const overtime = answers['overtime'];
-  const freetime = answers['freetime'];
-  const salary = answers['salary'];
-  const hometown = answers['hometown'];
-  const atmosphere = answers['atmosphere'];
+  var sector = answers['sector'];
+  var overtime = answers['overtime'];
+  var freetime = answers['freetime'];
+  var salary = answers['salary'];
+  var hometown = answers['hometown'];
+  var atmosphere = answers['atmosphere'];
 
-  let tag = '', msg = '', color = '';
+  var tag = '', msg = '', color = '';
 
   if (score >= 8) {
     color = '#8e44ad';
@@ -296,4 +294,29 @@ function showResult(score) {
     } else if (atmosphere === 'bad') {
       msg = '烂环境待久了容易开始怀疑自己，但问题真的不在你。离开一个消耗你的地方，不是逃跑，是对自己负责。';
     } else {
-      msg = '现在的状态确实不太好，但每一个低
+      msg = '现在的状态确实不太好，但每一个低谷都是转折的起点。先把自己照顾好，其他的慢慢来。';
+    }
+  } else {
+    color = '#e74c3c';
+    tag = '😔 撑着呢';
+    msg = '钱少、加班多、没有自己的时间，还要忍受糟糕的环境——这日子过得，换我我也撑不住。但你还在，已经很厉害了。现在最重要的一件事：多爱自己一点，你不欠任何人一个燃尽自己的理由。';
+  }
+
+  document.getElementById('scoreCircle').style.background = color;
+  document.getElementById('scoreTag').textContent = tag;
+  document.getElementById('scoreTag').style.color = color;
+  document.getElementById('scoreMsg').textContent = msg;
+}
+
+function restart() {
+  Object.keys(answers).forEach(function(k) { delete answers[k]; });
+  currentStep = 0;
+  document.getElementById('result').style.display = 'none';
+  renderStep(0);
+}
+
+renderOptions('opts-0', flow[0].options, flow[0].key);
+updateProgress();
+</script>
+</body>
+</html>
