@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>现状评分器</title>
+  <title>打工人现状评分器</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -19,7 +19,7 @@
       background: #fff;
       border-radius: 20px;
       padding: 36px 32px;
-      max-width: 600px;
+      max-width: 620px;
       width: 100%;
       box-shadow: 0 20px 60px rgba(0,0,0,0.2);
     }
@@ -27,23 +27,22 @@
     .subtitle { text-align: center; color: #888; font-size: 0.9rem; margin-bottom: 28px; }
     .step { display: none; }
     .step.active { display: block; }
-    .step-title { font-size: 1.1rem; font-weight: 600; color: #444; margin-bottom: 16px; }
-    .options { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+    .step-title { font-size: 1.05rem; font-weight: 600; color: #444; margin-bottom: 16px; line-height: 1.5; }
+    .options { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
     .opt-btn {
       padding: 10px 18px;
       border: 2px solid #ddd;
       border-radius: 30px;
       background: #f9f9f9;
       cursor: pointer;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       color: #555;
       transition: all 0.2s;
       user-select: none;
     }
     .opt-btn:hover { border-color: #764ba2; color: #764ba2; }
     .opt-btn.selected { background: #764ba2; border-color: #764ba2; color: #fff; }
-    .opt-btn.multi.selected { background: #667eea; border-color: #667eea; color: #fff; }
-    .nav-btns { display: flex; justify-content: space-between; margin-top: 10px; }
+    .nav-btns { display: flex; justify-content: space-between; margin-top: 4px; }
     .btn { padding: 11px 28px; border: none; border-radius: 30px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.2s; }
     .btn-primary { background: linear-gradient(135deg,#667eea,#764ba2); color: #fff; }
     .btn-primary:hover { opacity: 0.88; }
@@ -51,332 +50,250 @@
     .btn-secondary:hover { background: #ddd; }
     .progress-bar { height: 6px; background: #eee; border-radius: 3px; margin-bottom: 24px; overflow: hidden; }
     .progress-fill { height: 100%; background: linear-gradient(90deg,#667eea,#764ba2); border-radius: 3px; transition: width 0.4s; }
+    .step-counter { text-align: right; font-size: 0.8rem; color: #bbb; margin-bottom: 10px; }
     #result { display: none; text-align: center; }
     .score-circle {
-      width: 140px; height: 140px; border-radius: 50%;
+      width: 150px; height: 150px; border-radius: 50%;
       margin: 0 auto 16px;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      font-size: 2.8rem; font-weight: 700; color: #fff;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-size: 3rem; font-weight: 700; color: #fff;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
     }
-    .score-label { font-size: 0.85rem; margin-top: 2px; }
-    .score-desc { font-size: 1.05rem; color: #555; margin: 10px 0 20px; line-height: 1.7; }
-    .detail-list { text-align: left; background: #f7f7fb; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; }
-    .detail-list li { list-style: none; padding: 5px 0; font-size: 0.92rem; color: #555; border-bottom: 1px solid #eee; }
-    .detail-list li:last-child { border-bottom: none; }
-    .detail-list li span { float: right; font-weight: 600; }
-    .restart-btn { background: linear-gradient(135deg,#667eea,#764ba2); color: #fff; border: none; padding: 12px 36px; border-radius: 30px; font-size: 1rem; cursor: pointer; font-weight: 600; }
+    .score-label { font-size: 0.85rem; margin-top: 2px; opacity: 0.9; }
+    .score-tag { font-size: 1.25rem; font-weight: 700; margin-bottom: 10px; }
+    .score-msg {
+      font-size: 1rem; color: #555; margin: 0 0 20px;
+      line-height: 1.8; background: #f7f7fb;
+      border-radius: 12px; padding: 16px 20px;
+      text-align: left;
+    }
+    .restart-btn {
+      background: linear-gradient(135deg,#667eea,#764ba2);
+      color: #fff; border: none; padding: 12px 36px;
+      border-radius: 30px; font-size: 1rem; cursor: pointer; font-weight: 600;
+      margin-top: 4px;
+    }
+    .restart-btn:hover { opacity: 0.88; }
   </style>
 </head>
 <body>
 <div class="card">
-  <h1>🌟 现状评分器</h1>
-  <p class="subtitle">客观评估你当前的生活状态，满分 10 分</p>
+  <h1>💼 打工人现状评分</h1>
+  <p class="subtitle">测测你现在的打工生活质量，满分 10 分</p>
   <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="step-counter" id="stepCounter"></div>
 
   <div class="step active" id="step-0">
-    <div class="step-title">你目前的身份是？</div>
-    <div class="options" id="opts-identity">
-      <div class="opt-btn" data-val="student">🎒 学生</div>
-      <div class="opt-btn" data-val="worker">💼 上班族</div>
-    </div>
+    <div class="step-title">你的工作性质是？</div>
+    <div class="options" id="opts-0"></div>
     <div class="nav-btns"><span></span><button class="btn btn-primary" onclick="nextStep()">下一步</button></div>
   </div>
 
-  <div class="step" id="step-1">
-    <div class="step-title" id="step1-title"></div>
-    <div class="options" id="opts-sub"></div>
-    <div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div>
-  </div>
-
-  <div class="step" id="step-2">
-    <div class="step-title" id="step2-title"></div>
-    <div class="options" id="opts-step2"></div>
-    <div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div>
-  </div>
-
-  <div class="step" id="step-3">
-    <div class="step-title" id="step3-title"></div>
-    <div class="options" id="opts-step3"></div>
-    <div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div>
-  </div>
-
-  <div class="step" id="step-4">
-    <div class="step-title" id="step4-title"></div>
-    <div class="options" id="opts-step4"></div>
-    <div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div>
-  </div>
-
-  <div class="step" id="step-5">
-    <div class="step-title" id="step5-title"></div>
-    <div class="options" id="opts-step5"></div>
-    <div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div>
-  </div>
-
-  <div class="step" id="step-6">
-    <div class="step-title" id="step6-title"></div>
-    <div class="options" id="opts-step6"></div>
-    <div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div>
-  </div>
-
-  <div class="step" id="step-7">
-    <div class="step-title" id="step7-title"></div>
-    <div class="options" id="opts-step7"></div>
-    <div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="calcScore()">查看结果</button></div>
-  </div>
+  <div class="step" id="step-1"><div class="step-title" id="title-1"></div><div class="options" id="opts-1"></div><div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div></div>
+  <div class="step" id="step-2"><div class="step-title" id="title-2"></div><div class="options" id="opts-2"></div><div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div></div>
+  <div class="step" id="step-3"><div class="step-title" id="title-3"></div><div class="options" id="opts-3"></div><div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div></div>
+  <div class="step" id="step-4"><div class="step-title" id="title-4"></div><div class="options" id="opts-4"></div><div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div></div>
+  <div class="step" id="step-5"><div class="step-title" id="title-5"></div><div class="options" id="opts-5"></div><div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div></div>
+  <div class="step" id="step-6"><div class="step-title" id="title-6"></div><div class="options" id="opts-6"></div><div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div></div>
+  <div class="step" id="step-7"><div class="step-title" id="title-7"></div><div class="options" id="opts-7"></div><div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div></div>
+  <div class="step" id="step-8"><div class="step-title" id="title-8"></div><div class="options" id="opts-8"></div><div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="nextStep()">下一步</button></div></div>
+  <div class="step" id="step-9"><div class="step-title" id="title-9"></div><div class="options" id="opts-9"></div><div class="nav-btns"><button class="btn btn-secondary" onclick="prevStep()">上一步</button><button class="btn btn-primary" onclick="calcScore()">查看结果</button></div></div>
 
   <div id="result">
     <div class="score-circle" id="scoreCircle">
       <div id="scoreNum">--</div>
       <div class="score-label">/ 10</div>
     </div>
-    <div id="scoreTag" style="font-size:1.3rem;font-weight:700;margin-bottom:8px;"></div>
-    <div class="score-desc" id="scoreDesc"></div>
-    <ul class="detail-list" id="detailList"></ul>
+    <div class="score-tag" id="scoreTag"></div>
+    <div class="score-msg" id="scoreMsg"></div>
     <button class="restart-btn" onclick="restart()">🔄 重新测评</button>
   </div>
 </div>
 
 <script>
+const TOTAL_STEPS = 10;
 const answers = {};
 let currentStep = 0;
-let identity = '';
 
-const studentFlow = [
-  { title:'你目前的学历阶段是？', key:'edu', multi:false, options:[
-    {label:'高中及以下', val:'highschool', score:0},
-    {label:'本科生', val:'bachelor', score:0.5},
-    {label:'研究生', val:'master', score:1},
+const flow = [
+  { key:'sector', title:'你的工作性质是？', options:[
+    { label:'🏛️ 体制内（公务员 / 事业单位 / 国企）', val:'public', score:1 },
+    { label:'🏢 体制外（私企 / 外企 / 自由职业）', val:'private', score:0.5 },
   ]},
-  { title:'你有没有在谈的对象？', key:'relationship', multi:false, options:[
-    {label:'有，感情稳定 ❤️', val:'stable', score:2},
-    {label:'有，但状态一般', val:'ok', score:1},
-    {label:'单身，但不着急', val:'single_ok', score:1},
-    {label:'单身，有点焦虑', val:'single_bad', score:0},
+  { key:'city', title:'你目前工作的城市级别是？', options:[
+    { label:'一线城市（北上广深）', val:'tier1', score:0.5 },
+    { label:'新一线城市', val:'tier1_5', score:0.8 },
+    { label:'二线城市', val:'tier2', score:1 },
+    { label:'三线城市', val:'tier3', score:1 },
+    { label:'四五线城市', val:'tier4', score:0.8 },
   ]},
-  { title:'有没有喜欢玩的游戏？', key:'game', multi:false, options:[
-    {label:'有，经常玩很解压', val:'yes_good', score:1},
-    {label:'有，但玩得太多影响生活', val:'yes_bad', score:0},
-    {label:'没有，不感兴趣', val:'no', score:0.5},
+  { key:'hometown', title:'工作城市离你家乡有多远？', options:[
+    { label:'就在家附近，骑车能到', val:'near', score:2 },
+    { label:'同城市 / 同省，偶尔能回', val:'same_prov', score:1.5 },
+    { label:'跨省，逢年过节才回', val:'far', score:0.5 },
+    { label:'很远，回一次要大半天', val:'very_far', score:0 },
   ]},
-  { title:'有没有兴趣爱好？（可多选）', key:'hobby', multi:true, options:[
-    {label:'音乐/乐器', val:'music', score:0.5},
-    {label:'绘画/手工', val:'art', score:0.5},
-    {label:'阅读/写作', val:'reading', score:0.5},
-    {label:'摄影/视频', val:'photo', score:0.5},
-    {label:'没有特别的爱好', val:'none', score:0},
+  { key:'commute', title:'你每天单程通勤时间大概多久？', options:[
+    { label:'15分钟以内，幸福感拉满', val:'short', score:2 },
+    { label:'15 ~ 30分钟，还行', val:'mid', score:1.5 },
+    { label:'30 ~ 60分钟，有点累', val:'long', score:0.8 },
+    { label:'1小时以上，路上就废了', val:'very_long', score:0 },
   ]},
-  { title:'有没有喜欢的运动？', key:'sport', multi:false, options:[
-    {label:'有，坚持锻炼', val:'yes_regular', score:1.5},
-    {label:'有，偶尔运动', val:'yes_sometimes', score:0.8},
-    {label:'没有，不太运动', val:'no', score:0},
+  { key:'rest', title:'你的休息制度是？', options:[
+    { label:'双休，雷打不动', val:'two_day', score:2 },
+    { label:'大小周，凑合', val:'alt', score:1 },
+    { label:'单休，就一天', val:'one_day', score:0.5 },
+    { label:'几乎没有固定休息', val:'none', score:0 },
   ]},
-  { title:'学业压力如何？', key:'study_pressure', multi:false, options:[
-    {label:'压力不大，游刃有余', val:'low', score:1.5},
-    {label:'有压力，但能应对', val:'mid', score:1},
-    {label:'压力很大，有些吃力', val:'high', score:0.3},
-    {label:'极度焦虑，快撑不住', val:'extreme', score:0},
+  { key:'hours', title:'你平时几点上班、几点下班？', options:[
+    { label:'9点上 ~ 6点下，正常人时间', val:'normal', score:2 },
+    { label:'8点上 ~ 7点下，稍微长一点', val:'slightly_long', score:1.2 },
+    { label:'8点上 ~ 9点下，10小时+', val:'long', score:0.4 },
+    { label:'早八晚十以上，接近996', val:'extreme', score:0 },
   ]},
-  { title:'你对目前生活的整体满意度？', key:'satisfaction', multi:false, options:[
-    {label:'很满意，状态不错', val:'great', score:2},
-    {label:'还行，凑合过', val:'ok', score:1},
-    {label:'不太满意，有些迷茫', val:'bad', score:0.3},
-    {label:'很不满意，想改变', val:'terrible', score:0},
+  { key:'overtime', title:'加班情况怎么样？', options:[
+    { label:'基本不加班，到点走人', val:'no', score:2 },
+    { label:'偶尔加班，有加班费', val:'sometimes_paid', score:1.5 },
+    { label:'偶尔加班，没有加班费', val:'sometimes_free', score:0.8 },
+    { label:'经常加班，身体有点吃不消', val:'often', score:0.2 },
+    { label:'天天加班，已经麻木了', val:'always', score:0 },
+  ]},
+  { key:'salary', title:'你目前的税后月薪大概在哪个区间？', options:[
+    { label:'3000 元以下', val:'s1', score:0 },
+    { label:'3000 ~ 6000 元', val:'s2', score:0.5 },
+    { label:'6000 ~ 10000 元', val:'s3', score:1 },
+    { label:'10000 ~ 15000 元', val:'s4', score:1.5 },
+    { label:'15000 ~ 20000 元', val:'s5', score:1.8 },
+    { label:'20000 元以上', val:'s6', score:2 },
+  ]},
+  { key:'atmosphere', title:'工作氛围和人际关系怎么样？', options:[
+    { label:'同事融洽，领导靠谱，上班不内耗', val:'good', score:2 },
+    { label:'还行，没什么大矛盾', val:'ok', score:1.2 },
+    { label:'一般，偶尔有点压抑', val:'mid', score:0.5 },
+    { label:'氛围差，领导难搞，内耗严重', val:'bad', score:0 },
+  ]},
+  { key:'freetime', title:'下班后你有属于自己的时间吗？', options:[
+    { label:'有，下班就是我的时间，爱干嘛干嘛', val:'yes', score:2 },
+    { label:'有一点，但经常被消息打扰', val:'partial', score:1 },
+    { label:'很少，下班了还要处理工作', val:'little', score:0.3 },
+    { label:'几乎没有，工作占满了生活', val:'no', score:0 },
   ]},
 ];
-
-const workerFlow = [
-  { title:'你的工作性质是？', key:'sector', multi:false, options:[
-    {label:'体制内（公务员/事业单位/国企）', val:'public', score:1},
-    {label:'体制外（私企/外企/自由职业等）', val:'private', score:0.5},
-  ]},
-  { title:'你所在的城市级别是？', key:'city', multi:false, options:[
-    {label:'一线城市', val:'tier1', score:0.5},
-    {label:'新一线城市', val:'tier1_5', score:0.8},
-    {label:'二线城市', val:'tier2', score:1},
-    {label:'三线城市', val:'tier3', score:1},
-    {label:'四五线城市', val:'tier4', score:0.8},
-  ]},
-  { title:'城市离你家乡近吗？', key:'hometown', multi:false, options:[
-    {label:'就在家附近，很近', val:'near', score:1.5},
-    {label:'同省，还算近', val:'same_prov', score:1},
-    {label:'跨省，比较远', val:'far', score:0.3},
-    {label:'很远，几乎回不去', val:'very_far', score:0},
-  ]},
-  { title:'你的休息制度是？', key:'rest', multi:false, options:[
-    {label:'双休（周六日休）', val:'two_day', score:2},
-    {label:'大小周', val:'alt', score:1},
-    {label:'单休', val:'one_day', score:0.5},
-    {label:'几乎没有固定休息', val:'none', score:0},
-  ]},
-  { title:'你的上下班时间是？', key:'hours', multi:false, options:[
-    {label:'朝九晚五 / 朝九晚六', val:'normal', score:2},
-    {label:'早八晚六 / 早九晚七', val:'slightly_long', score:1.2},
-    {label:'早八晚八（10小时+）', val:'long', score:0.5},
-    {label:'早八晚十以上（996/007）', val:'extreme', score:0},
-  ]},
-  { title:'经常加班吗？', key:'overtime', multi:false, options:[
-    {label:'基本不加班', val:'no', score:1.5},
-    {label:'偶尔加班，可接受', val:'sometimes', score:1},
-    {label:'经常加班，有些疲惫', val:'often', score:0.3},
-    {label:'几乎天天加班，身心俱疲', val:'always', score:0},
-  ]},
-  { title:'你的薪资水平如何？', key:'salary', multi:false, options:[
-    {label:'远超同龄人，很满意', val:'high', score:2},
-    {label:'和同龄人差不多', val:'mid', score:1.2},
-    {label:'略低，有些压力', val:'low', score:0.5},
-    {label:'入不敷出，压力很大', val:'very_low', score:0},
-  ]},
-];
-
-function getFlow() { return identity === 'student' ? studentFlow : workerFlow; }
 
 function updateProgress() {
-  const total = getFlow().length + 1;
-  const pct = Math.round((currentStep / total) * 100);
+  const pct = Math.round((currentStep / (TOTAL_STEPS - 1)) * 100);
   document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('stepCounter').textContent = '第 ' + (currentStep + 1) + ' / ' + TOTAL_STEPS + ' 题';
 }
 
-function renderStep(stepIndex) {
+function renderStep(idx) {
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   document.getElementById('result').style.display = 'none';
-
-  if (stepIndex === 0) { document.getElementById('step-0').classList.add('active'); return; }
-
-  if (stepIndex === 1) {
-    document.getElementById('step-1').classList.add('active');
-    const flow = getFlow();
-    const cfg = flow[0];
-    document.getElementById('step1-title').textContent = cfg.title;
-    renderOptions('opts-sub', cfg.options, cfg.key, cfg.multi);
-    return;
+  const cfg = flow[idx];
+  if (idx > 0) {
+    document.getElementById('title-' + idx).textContent = cfg.title;
+    renderOptions('opts-' + idx, cfg.options, cfg.key);
+  } else {
+    renderOptions('opts-0', cfg.options, cfg.key);
   }
-
-  const flowIdx = stepIndex - 1;
-  const flow = getFlow();
-  if (flowIdx >= flow.length) return;
-  const cfg = flow[flowIdx];
-  document.getElementById('step' + stepIndex + '-title').textContent = cfg.title;
-  renderOptions('opts-step' + stepIndex, cfg.options, cfg.key, cfg.multi);
-  document.getElementById('step-' + stepIndex).classList.add('active');
+  document.getElementById('step-' + idx).classList.add('active');
+  updateProgress();
 }
 
-function renderOptions(containerId, options, key, multi) {
+function renderOptions(containerId, options, key) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
   options.forEach(opt => {
     const btn = document.createElement('div');
-    btn.className = 'opt-btn' + (multi ? ' multi' : '');
+    btn.className = 'opt-btn';
     btn.textContent = opt.label;
     btn.dataset.val = opt.val;
-    if (multi) { if ((answers[key]||[]).includes(opt.val)) btn.classList.add('selected'); }
-    else { if (answers[key] === opt.val) btn.classList.add('selected'); }
+    if (answers[key] === opt.val) btn.classList.add('selected');
     btn.addEventListener('click', () => {
-      if (multi) {
-        if (!answers[key]) answers[key] = [];
-        if (btn.classList.contains('selected')) { btn.classList.remove('selected'); answers[key] = answers[key].filter(v => v !== opt.val); }
-        else { btn.classList.add('selected'); answers[key].push(opt.val); }
-      } else {
-        container.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        answers[key] = opt.val;
-      }
+      container.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      answers[key] = opt.val;
     });
     container.appendChild(btn);
   });
 }
 
 function nextStep() {
-  if (currentStep === 0) {
-    if (!answers['identity']) { alert('请先选择身份'); return; }
-    identity = answers['identity'];
-    currentStep = 1;
-    renderStep(1); updateProgress(); return;
-  }
-  const flowIdx = currentStep - 1;
-  const flow = getFlow();
-  const cfg = flow[flowIdx];
-  if (cfg.multi) { if (!answers[cfg.key] || answers[cfg.key].length === 0) { alert('请至少选择一项'); return; } }
-  else { if (!answers[cfg.key]) { alert('请先选择'); return; } }
+  const cfg = flow[currentStep];
+  if (!answers[cfg.key]) { alert('请先选择一项'); return; }
   currentStep++;
-  if (currentStep > flow.length) { calcScore(); }
-  else { renderStep(currentStep); updateProgress(); }
+  if (currentStep >= TOTAL_STEPS) { calcScore(); return; }
+  renderStep(currentStep);
 }
 
 function prevStep() {
   if (currentStep <= 0) return;
   currentStep--;
-  renderStep(currentStep); updateProgress();
+  renderStep(currentStep);
 }
-
-document.querySelectorAll('#opts-identity .opt-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('#opts-identity .opt-btn').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    answers['identity'] = btn.dataset.val;
-  });
-});
 
 function calcScore() {
-  const flow = getFlow();
   let total = 0, maxTotal = 0;
-  const details = [];
   flow.forEach(cfg => {
-    const key = cfg.key;
-    let score = 0, max = 0;
-    if (cfg.multi) {
-      const arr = answers[key] || [];
-      arr.forEach(v => { const opt = cfg.options.find(o => o.val === v); if (opt) score += opt.score; });
-      max = Math.max(...cfg.options.map(o => o.score)) * 2;
-    } else {
-      const opt = cfg.options.find(o => o.val === answers[key]);
-      if (opt) score = opt.score;
-      max = Math.max(...cfg.options.map(o => o.score));
-    }
-    total += score; maxTotal += max;
-    details.push({ label: cfg.title.replace('？',''), score, max });
+    const opt = cfg.options.find(o => o.val === answers[cfg.key]);
+    if (opt) total += opt.score;
+    maxTotal += Math.max(...cfg.options.map(o => o.score));
   });
-  const ratio = maxTotal > 0 ? total / maxTotal : 0;
-  let finalScore = Math.round((ratio * 11) - 1);
-  finalScore = Math.max(-1, Math.min(10, finalScore));
-  showResult(finalScore, details);
+  const ratio = total / maxTotal;
+  let score = Math.round(ratio * 11 - 1);
+  score = Math.max(-1, Math.min(10, score));
+  showResult(score);
 }
 
-function showResult(score, details) {
+function showResult(score) {
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   document.getElementById('result').style.display = 'block';
   document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('stepCounter').textContent = '';
   document.getElementById('scoreNum').textContent = score;
-  const circle = document.getElementById('scoreCircle');
-  let tag = '', desc = '', color = '';
-  if (score <= -1) { tag='😔 当前状态堪忧'; desc='生活压力较大，建议认真思考改变的方向，照顾好自己的身心健康。'; color='#e74c3c'; }
-  else if (score <= 2) { tag='😟 有些低迷'; desc='目前状态不太理想，但每个低谷都是转折的起点，慢慢来。'; color='#e67e22'; }
-  else if (score <= 4) { tag='😐 平平无奇'; desc='生活还算稳定，但缺少一些亮点。可以尝试增加一些让自己开心的事情。'; color='#f39c12'; }
-  else if (score <= 6) { tag='🙂 状态不错'; desc='整体生活质量良好，继续保持，适当优化薄弱环节。'; color='#27ae60'; }
-  else if (score <= 8) { tag='😊 相当不错'; desc='你的生活状态很好，工作/学习与生活达到了较好的平衡，值得羡慕！'; color='#2980b9'; }
-  else { tag='🌟 人生赢家'; desc='各方面都很出色，继续享受当下的美好生活吧！'; color='#8e44ad'; }
-  circle.style.background = color;
-  document.getElementById('scoreTag').textContent = tag;
-  document.getElementById('scoreTag').style.color = color;
-  document.getElementById('scoreDesc').textContent = desc;
-  const list = document.getElementById('detailList');
-  list.innerHTML = '';
-  details.forEach(d => {
-    const li = document.createElement('li');
-    const pct = d.max > 0 ? Math.round((d.score / d.max) * 100) : 0;
-    li.innerHTML = d.label + '<span>' + pct + '%</span>';
-    list.appendChild(li);
-  });
-}
 
-function restart() {
-  Object.keys(answers).forEach(k => delete answers[k]);
-  currentStep = 0; identity = '';
-  document.getElementById('result').style.display = 'none';
-  document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
-  renderStep(0); updateProgress();
-}
+  const sector = answers['sector'];
+  const overtime = answers['overtime'];
+  const freetime = answers['freetime'];
+  const salary = answers['salary'];
+  const hometown = answers['hometown'];
+  const atmosphere = answers['atmosphere'];
 
-updateProgress();
-</script>
-</body>
-</html>
+  let tag = '', msg = '', color = '';
+
+  if (score >= 8) {
+    color = '#8e44ad';
+    tag = '🌟 人生赢家';
+    if (sector === 'public') {
+      msg = '铁饭碗端得稳稳的，双休准时下班，这日子过得……不是哥们？给我推一下你们单位还招人吗？';
+    } else if (salary === 's6' || salary === 's5') {
+      msg = '体制外还能混成这样，大佬本佬，顶礼膜拜。说真的，你们公司还缺人吗？帮我内推一下？';
+    } else {
+      msg = '工作稳、钱到位、还有自己的时间，这配置说出去要被人拉黑的。不是哥们，工作给我推一下呗？';
+    }
+  } else if (score >= 6) {
+    color = '#27ae60';
+    tag = '🙂 还不错';
+    msg = '整体来说生活质量挺好的，没什么大问题。继续保持，有空再想想有没有什么能让自己更开心的事。';
+  } else if (score >= 3) {
+    color = '#f39c12';
+    tag = '😐 将就着过';
+    if (overtime === 'often' || overtime === 'always') {
+      msg = '加班加到麻木，下班还要处理消息——你不是在打工，你是在燃烧自己。记得留一点火给自己，你不只是一个工具人。';
+    } else if (freetime === 'no' || freetime === 'little') {
+      msg = '工作占满了你的生活，连喘口气的时间都快没了。多爱自己一点，生活不只有工作，你也值得有自己的时间。';
+    } else if (salary === 's1' || salary === 's2') {
+      msg = '钱没给够，委屈倒是受了不少。你付出的值得被更好地回报，别让廉价的薪资定义你的价值。';
+    } else {
+      msg = '生活还凑合，但总感觉少点什么。偶尔停下来想想自己真正想要什么，别只是惯性地往前跑。';
+    }
+  } else if (score >= 0) {
+    color = '#e67e22';
+    tag = '😟 有些低迷';
+    if ((hometown === 'far' || hometown === 'very_far') && (freetime === 'no' || freetime === 'little')) {
+      msg = '一个人漂在外面，工作还占满了所有时间，这种日子真的不容易。偶尔想家了就回去看看，别把自己逼得太紧，你已经很拼了。';
+    } else if (atmosphere === 'bad') {
+      msg = '烂环境待久了容易开始怀疑自己，但问题真的不在你。离开一个消耗你的地方，不是逃跑，是对自己负责。';
+    } else {
+      msg = '现在的状态确实不太好，但每一个低
